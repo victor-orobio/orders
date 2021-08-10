@@ -6,10 +6,7 @@ import com.service.orders.common.ResponseHandler;
 import com.service.orders.order.adapter.in.web.dto.OrderInputData;
 import com.service.orders.order.application.port.in.ReceiveOrderCommand;
 import com.service.orders.order.application.port.in.ReceiveOrderUseCase;
-import com.service.orders.order.domain.Item;
-import com.service.orders.order.domain.Order;
-import com.service.orders.order.domain.OrderDetail;
-import com.service.orders.order.domain.RequestedItem;
+import com.service.orders.order.domain.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -30,6 +27,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import javax.validation.constraints.NotEmpty;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -77,28 +75,11 @@ class OrderControllerTest {
         Order.ClientId clientId = new Order.ClientId(33L);
         Item.ItemId appleId = new Item.ItemId(10L);
         Item.ItemId orangeId = new Item.ItemId(11L);
-        List<RequestedItem> requestedItems = Arrays.asList(
-                new RequestedItem(appleId.getValue(), 10),
-                new RequestedItem(orangeId.getValue(), 10)
-        );
+        List<RequestedItem> requestedItems = getRequestedItems(appleId, orangeId);
         OrderInputData orderInputData = new OrderInputData(clientId.getValue(), requestedItems);
         String jsonInputData = objectMapper.writeValueAsString(orderInputData);
 
-        Order order = defaultOrder()
-                .withOrderId(orderId)
-                .withClientId(clientId)
-                .withOrderDetail(new OrderDetail(
-                        defaultDetail()
-                                .withOrderId(orderId)
-                                .withItemId(appleId)
-                                .withQuantity(10)
-                                .withCost(60).build(),
-                        defaultDetail()
-                                .withOrderId(orderId)
-                                .withItemId(orangeId)
-                                .withQuantity(10)
-                                .withCost(25).build())
-                ).build();
+        Order order = getOrder(orderId, clientId, appleId, orangeId);
         BDDMockito.given(receiveOrderUseCaseService.receiveOrder(any(ReceiveOrderCommand.class))).willReturn(order);
         MvcResult mvcResult = mockMvc.perform(post("/api/v1/orders")
                         .contentType(MediaType.APPLICATION_JSON).characterEncoding("utf-8")
@@ -109,5 +90,51 @@ class OrderControllerTest {
         ArgumentCaptor<ReceiveOrderCommand> orderCaptor = ArgumentCaptor.forClass(ReceiveOrderCommand.class);
         verify(receiveOrderUseCaseService, atMostOnce()).receiveOrder(orderCaptor.capture());
         assertThat(orderCaptor.getValue().getClientId()).isEqualTo(clientId);
+    }
+
+    @DisplayName("Argument Not Valid")
+    @Test
+    void receiveOrderFailInvalidArgument() throws Exception {
+        Order.OrderId orderId = new Order.OrderId(1L);
+        Order.ClientId clientId = new Order.ClientId(null);
+        Item.ItemId appleId = new Item.ItemId(10L);
+        Item.ItemId orangeId = new Item.ItemId(11L);
+        List<RequestedItem> requestedItems = getRequestedItems(appleId, orangeId);
+        OrderInputData orderInputData = new OrderInputData(clientId.getValue(), requestedItems);
+        String jsonInputData = objectMapper.writeValueAsString(orderInputData);
+
+        Order order = getOrder(orderId, clientId, appleId, orangeId);
+        BDDMockito.given(receiveOrderUseCaseService.receiveOrder(any(ReceiveOrderCommand.class))).willReturn(order);
+        MvcResult mvcResult = mockMvc.perform(post("/api/v1/orders")
+                        .contentType(MediaType.APPLICATION_JSON).characterEncoding("utf-8")
+                        .content(jsonInputData))
+                .andDo(print())
+                .andExpect(status().is4xxClientError())
+                .andReturn();
+    }
+
+    private Order getOrder(Order.OrderId orderId, Order.ClientId clientId, Item.ItemId... itemIds) {
+        List<Detail> details = new ArrayList<>();
+        for (Item.ItemId id: itemIds) {
+            details.add(
+                    defaultDetail()
+                            .withOrderId(orderId)
+                            .withItemId(id)
+                            .withQuantity(10)
+                            .withCost(10).build()
+            );
+        }
+        return defaultOrder()
+                .withOrderId(orderId)
+                .withClientId(clientId)
+                .withOrderDetail(new OrderDetail(details)).build();
+    }
+
+    private List<RequestedItem> getRequestedItems(Item.ItemId... itemIds){
+        List<RequestedItem> requestedItems = new ArrayList<>();
+        for (Item.ItemId id: itemIds) {
+            requestedItems.add( new RequestedItem(id.getValue(), 10));
+        }
+        return requestedItems;
     }
 }

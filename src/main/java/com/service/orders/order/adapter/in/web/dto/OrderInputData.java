@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import java.util.List;
 
@@ -13,6 +14,7 @@ import java.util.List;
 public class OrderInputData {
 
     @Positive
+    @NotNull
     private final Long clientId;
 
     @NotEmpty
