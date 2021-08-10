@@ -31,9 +31,9 @@ public class ReceiveOrderService implements ReceiveOrderUseCase {
                 .map(requestedItem -> new Detail(
                         new Detail.DetailId(0L),
                         orderId,
-                        requestedItem.getItemId(),
+                        new Item.ItemId(requestedItem.getItemId()),
                         requestedItem.getQuantity(),
-                        (items.get(requestedItem.getItemId().getValue()).getCost())))
+                        (items.get(requestedItem.getItemId()).getCost())))
                 .collect(Collectors.toList());
 
     }

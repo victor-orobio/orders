@@ -11,7 +11,7 @@ public class RequestedItem {
 
     @Getter
     @NonNull
-    private final Item.ItemId itemId;
+    private final Long itemId;
 
     @Getter
     @NonNull

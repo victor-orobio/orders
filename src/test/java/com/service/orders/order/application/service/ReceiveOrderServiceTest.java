@@ -32,9 +32,11 @@ class ReceiveOrderServiceTest {
     @Test
     void receiveOrderSuccess() {
         Order.ClientId clientId = new Order.ClientId(90L);
+        Item.ItemId appleId = new Item.ItemId(10L);
+        Item.ItemId orangeId = new Item.ItemId(11L);
         List<RequestedItem> requestedItems = Arrays.asList(
-                new RequestedItem(new Item.ItemId(10L),10),
-                new RequestedItem(new Item.ItemId(11L),10));
+                new RequestedItem(appleId.getValue(),10),
+                new RequestedItem(orangeId.getValue(),10));
         ReceiveOrderCommand command = new ReceiveOrderCommand(clientId,requestedItems);
 
         Order responseOrder = service.receiveOrder(command);
