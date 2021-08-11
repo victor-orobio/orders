@@ -1,0 +1,181 @@
+databaseChangeLog:
+  - changeSet:
+      id: order-table-create
+      author: vnorobio
+      changes:
+        - createTable:
+            tableName: order
+            columns:
+              - column:
+                  name: order_id
+                  type: int
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: cliente_id
+                  type: int
+                  constraints:
+                    nullable: false
+              - column:
+                  name: date
+                  type: date
+                  constraints:
+                    nullable: false
+  - changeSet:
+      id: item-create
+      author: vnorobio
+      changes:
+        - createTable:
+            tableName: item
+            columns:
+              - column:
+                  name: item_id
+                  type: int
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: description
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: cost
+                  type: int
+                  constraints:
+                    nullable: false
+  - changeSet:
+      id: offer-create
+      author: vnorobio
+      changes:
+        - createTable:
+            tableName: offer
+            columns:
+              - column:
+                  name: item_id
+                  type: int
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: offered_quantity
+                  type: int
+                  constraints:
+                    nullable: false
+              - column:
+                  name: base_quantity
+                  type: int
+                  constraints:
+                    nullable: false
+  - changeSet:
+      id: item-detail-create
+      author: vnorobio
+      changes:
+        - createTable:
+            tableName: item_detail
+            columns:
+              - column:
+                  name: item_detail_id
+                  type: int
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: order_id
+                  type: int
+                  constraints:
+                    nullable: false
+              - column:
+                  name: item_id
+                  type: int
+                  constraints:
+                    nullable: false
+              - column:
+                  name: quantity
+                  type: int
+                  constraints:
+                    nullable: false
+              - column:
+                  name: cost
+                  type: int
+                  constraints:
+                    nullable: false
+  - changeSet:
+      id: item-detail-createfk-order
+      author: vnorobio
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: order_id
+            baseTableName: item_detail
+            constraintName: fk_detail_order
+            referencedColumnNames: order_id
+            referencedTableName: order
+  - changeSet:
+      id: item-detail-createfk-item
+      author: vnorobio
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: item_id
+            baseTableName: item_detail
+            constraintName: fk_detail_item
+            referencedColumnNames: item_id
+            referencedTableName: item
+  - changeSet:
+      id: discount-detail-create
+      author: vnorobio
+      changes:
+        - createTable:
+            tableName: discount_detail
+            columns:
+              - column:
+                  name: discount_detail_id
+                  type: int
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: order_id
+                  type: int
+                  constraints:
+                    nullable: false
+              - column:
+                  name: item_id
+                  type: int
+                  constraints:
+                    nullable: false
+              - column:
+                  name: quantity
+                  type: int
+                  constraints:
+                    nullable: false
+              - column:
+                  name: cost_discounted
+                  type: int
+                  constraints:
+                    nullable: false
+  - changeSet:
+      id: discount-detail-createfk-order
+      author: vnorobio
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: order_id
+            baseTableName: discount_detail
+            constraintName: fk_discount_order
+            referencedColumnNames: order_id
+            referencedTableName: order
+  - changeSet:
+      id: discount-detail-createfk-item
+      author: vnorobio
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: item_id
+            baseTableName: discount_detail
+            constraintName: fk_discount_item
+            referencedColumnNames: item_id
+            referencedTableName: item
