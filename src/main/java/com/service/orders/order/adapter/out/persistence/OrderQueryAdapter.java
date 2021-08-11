@@ -15,6 +15,8 @@ public class OrderQueryAdapter implements OrderQueryPort {
 
     private final ItemRepository itemRepository;
 
+    private final OfferRepository offerRepository;
+
     @Override
     public Map<Long, Item> findAllItems() {
         Map<Long, Item> items = new HashMap<>();
@@ -29,8 +31,11 @@ public class OrderQueryAdapter implements OrderQueryPort {
     @Override
     public Map<Long, Offer> findAllOffers() {
         Map<Long, Offer> offers = new HashMap<>();
-        offers.put(10L, new Offer(new Item.ItemId(10L), 2, 1));
-        offers.put(11L, new Offer(new Item.ItemId(11L), 3, 2));
+        offerRepository.findAll().stream()
+                .forEach(offerEntity -> offers.put(offerEntity.getItemId(), new Offer(
+                        new Item.ItemId(offerEntity.getItemId()),
+                        offerEntity.getOfferedQuantity(),
+                        offerEntity.getBaseQuantity())));
         return offers;
     }
 

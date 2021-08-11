@@ -1,8 +1,10 @@
 package com.service.orders.order.adapter.out.persistence;
 
 import com.service.orders.order.adapter.out.persistence.entity.ItemEntity;
+import com.service.orders.order.adapter.out.persistence.entity.OfferEntity;
 import com.service.orders.order.application.service.ReceiveOrderService;
 import com.service.orders.order.domain.Item;
+import com.service.orders.order.domain.Offer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -29,9 +31,12 @@ class OrderQueryAdapterTest {
     @Mock
     private ItemRepository itemRepository;
 
+    @Mock
+    private OfferRepository offerRepository;
+
     @BeforeEach
     public void setup() {
-        this.adapter = new OrderQueryAdapter(itemRepository);
+        this.adapter = new OrderQueryAdapter(itemRepository,offerRepository);
     }
 
     @Test
@@ -45,5 +50,18 @@ class OrderQueryAdapterTest {
         assertThat(items).isNotNull();
         assertThat(items.size()).isEqualTo(entityList.size());
         assertThat(items.containsKey(11L)).isTrue();
+    }
+
+    @Test
+    void findAllOffers() {
+        List<OfferEntity> entityList = Arrays.asList(
+                new OfferEntity(1L,10L,2,1),
+                new OfferEntity(2L,11L,3,2)
+        );
+        BDDMockito.given(offerRepository.findAll()).willReturn(entityList);
+        Map<Long, Offer> offers = adapter.findAllOffers();
+        assertThat(offers).isNotNull();
+        assertThat(offers.size()).isEqualTo(entityList.size());
+        assertThat(offers.containsKey(11L)).isTrue();
     }
 }
