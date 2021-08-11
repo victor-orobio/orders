@@ -15,7 +15,7 @@ public class OrderTestData {
                 .withOrderId(new Order.OrderId(42L))
                 .withItemId(new Item.ItemId(43L))
                 .withCost(1)
-                .withQuantity(1);
+                .withQuantity(10);
     }
 
     public static class DetailBuilder{
@@ -118,18 +118,20 @@ public class OrderTestData {
     public static OrderBuilder defaultOrder(){
         return new OrderBuilder()
                 .withOrderId(new Order.OrderId(51L))
-                .withClientId(new Order.ClientId(45L))
+                .withClientId(new Order.ClientId(90L))
                 .withTimestamp(LocalDateTime.now())
                 .withOrderDetail(new OrderedItems(
                         defaultDetail()
                                 .withDetailId(new ItemDetail.DetailId(61L))
-                                .withItemId(new Item.ItemId(10L)).build(),
+                                .withItemId(new Item.ItemId(10L)).withCost(60).build(),
                         defaultDetail()
                                 .withDetailId(new ItemDetail.DetailId(71L))
-                                .withItemId(new Item.ItemId(11L)).build()))
+                                .withItemId(new Item.ItemId(11L)).withCost(25).build()))
                 .withOfferedDiscounts(new OfferedDiscounts(
-                        defaultDiscount().withItemId(new Item.ItemId(10L)).build(),
-                        defaultDiscount().withItemId(new Item.ItemId(11L)).build()));
+                        defaultDiscount().withItemId(new Item.ItemId(10L))
+                                .withQuantity(5).withCostDiscounted(60).build(),
+                        defaultDiscount().withItemId(new Item.ItemId(11L))
+                                .withQuantity(3).withCostDiscounted(25).build()));
     }
 
     public static class OrderBuilder{

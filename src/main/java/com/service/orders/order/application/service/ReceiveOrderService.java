@@ -2,11 +2,13 @@ package com.service.orders.order.application.service;
 
 import com.service.orders.order.application.port.in.ReceiveOrderCommand;
 import com.service.orders.order.application.port.in.ReceiveOrderUseCase;
+import com.service.orders.order.application.port.out.OrderEstateManagerPort;
 import com.service.orders.order.application.port.out.OrderQueryPort;
 import com.service.orders.order.domain.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,20 +16,24 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@Transactional
 @RequiredArgsConstructor
 @Service
 public class ReceiveOrderService implements ReceiveOrderUseCase {
 
     private final OrderQueryPort queryPort;
 
+    private final OrderEstateManagerPort estateManagerPort;
+
     @Override
     public Order receiveOrder(ReceiveOrderCommand command) {
-        Order.OrderId orderId = new Order.OrderId(1L);
+        Order.OrderId orderId = null;
 
         OrderedItems orderedItems = new OrderedItems(processRequestDetails(orderId, command.getRequestDetails()));
         OfferedDiscounts offeredDiscounts = new OfferedDiscounts(getApplicableDiscounts(orderedItems));
 
-        return new Order(orderId, command.getClientId(), LocalDateTime.now(), orderedItems, offeredDiscounts);
+        return estateManagerPort.save(
+                new Order(orderId, command.getClientId(), LocalDateTime.now(), orderedItems, offeredDiscounts));
     }
 
     private List<ItemDetail> processRequestDetails(Order.OrderId orderId, List<RequestedItem> requestDetails) {
