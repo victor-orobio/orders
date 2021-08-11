@@ -39,10 +39,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(controllers = OrderController.class)
 class OrderControllerTest {
-/*
-    @InjectMocks
-    private OrderController controller;
-*/
+
     @MockBean
     private ResponseHandler responseHandler;
 
@@ -58,14 +55,6 @@ class OrderControllerTest {
     @Autowired
     private ObjectMapper objectMapper = new ObjectMapper();
 
-
-/*
-    @BeforeEach
-    void setUp() {
-        this.controller = new OrderController(responseHandler, receiveOrderUseCaseService);
-        this.mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
-    }
-*/
     @DisplayName("Receiving order")
     @Test
     void receiveOrderSuccess() throws Exception {

@@ -21,7 +21,7 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
-@DisplayName("Testing receive order use case")
+@DisplayName("Testing Order Query Adapter")
 @ExtendWith(MockitoExtension.class)
 class OrderQueryAdapterTest {
 
