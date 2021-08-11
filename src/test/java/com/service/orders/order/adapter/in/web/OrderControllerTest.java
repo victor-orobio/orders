@@ -7,6 +7,7 @@ import com.service.orders.order.adapter.in.web.dto.OrderInputData;
 import com.service.orders.order.adapter.in.web.dto.OrderOutputData;
 import com.service.orders.order.application.port.in.ReceiveOrderCommand;
 import com.service.orders.order.application.port.in.ReceiveOrderUseCase;
+import com.service.orders.order.application.service.OrderQueryService;
 import com.service.orders.order.domain.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,14 +17,15 @@ import org.mockito.BDDMockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import static com.service.orders.common.OrderTestData.defaultDetail;
 import static com.service.orders.common.OrderTestData.defaultOrder;
@@ -31,8 +33,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.atMostOnce;
 import static org.mockito.Mockito.verify;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @DisplayName("Testing Orders Controller")
@@ -45,6 +48,9 @@ class OrderControllerTest {
 
     @MockBean
     private ReceiveOrderUseCase receiveOrderUseCaseService;
+
+    @MockBean
+    private OrderQueryService queryService;
 
     @MockBean
     private DtoDataFormatter formatter;
@@ -107,6 +113,31 @@ class OrderControllerTest {
                 .andReturn();
     }
 
+    @Test
+    void findAllSuccessShouldReturnStatusOk() throws Exception {
+        List<Order> orders = Arrays.asList(defaultOrder().build());
+        BDDMockito.given(queryService.findAll()).willReturn(orders);
+        BDDMockito.given(responseHandler
+                        .generateResponse(any(HttpStatus.class),any(Optional.class)))
+                .willReturn(getResponse(orders));
+        MvcResult mvcResult = mockMvc.perform(get("/api/v1/orders"))
+                .andDo(print())
+                .andExpect(status().isOk()).andReturn();
+        verify(queryService, atMostOnce()).findAll();
+    }
+
+    @Test
+    void findByIdShouldReturnStatusOk() throws Exception {
+        Order order = defaultOrder().build();
+        BDDMockito.given(queryService.findById(any(Long.class))).willReturn(order);
+        BDDMockito.given(responseHandler
+                        .generateResponse(any(HttpStatus.class),any(Optional.class)))
+                .willReturn(getResponse(order));
+        MvcResult mvcResult = mockMvc.perform(get("/api/v1/orders/{id}", Long.parseLong("1")))
+                .andExpect(status().is2xxSuccessful()).andReturn();
+        verify(queryService, atMostOnce()).findById(any(Long.class));
+    }
+
     private Order getOrder(Order.OrderId orderId, Order.ClientId clientId, Item.ItemId... itemIds) {
         List<ItemDetail> details = new ArrayList<>();
         for (Item.ItemId id: itemIds) {
@@ -130,5 +161,11 @@ class OrderControllerTest {
             requestedItems.add( new RequestedItem(id.getValue(), 10));
         }
         return requestedItems;
+    }
+
+    private ResponseEntity<Object> getResponse(Object object) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("content", object);
+        return ResponseEntity.status(HttpStatus.OK).body(map);
     }
 }
