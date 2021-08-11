@@ -1,6 +1,7 @@
 package com.service.orders.order.adapter.in.web;
 
 import com.service.orders.common.ResponseHandler;
+import com.service.orders.order.adapter.in.web.dto.DtoDataFormatter;
 import com.service.orders.order.adapter.in.web.dto.OrderInputData;
 import com.service.orders.order.application.port.in.ReceiveOrderCommand;
 import com.service.orders.order.application.port.in.ReceiveOrderUseCase;
@@ -21,11 +22,13 @@ public class OrderController {
 
     private final ReceiveOrderUseCase receiveOrderUseCaseService;
 
+    private final DtoDataFormatter formatter;
+
     @PostMapping("/orders")
     public ResponseEntity<Object> receiveOrder(@Valid @RequestBody OrderInputData inputData){
         Order.ClientId clientId = new Order.ClientId(inputData.getClientId());
         return responseHandler.generateResponse(
                 HttpStatus.OK,
-                receiveOrderUseCaseService.receiveOrder(new ReceiveOrderCommand(clientId, inputData.getRequestedItems())));
+                formatter.toOutputFormat(receiveOrderUseCaseService.receiveOrder(new ReceiveOrderCommand(clientId, inputData.getRequestedItems()))));
     }
 }

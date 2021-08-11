@@ -3,7 +3,9 @@ package com.service.orders.order.adapter.in.web;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.service.orders.common.ResponseHandler;
+import com.service.orders.order.adapter.in.web.dto.DtoDataFormatter;
 import com.service.orders.order.adapter.in.web.dto.OrderInputData;
+import com.service.orders.order.adapter.in.web.dto.OrderOutputData;
 import com.service.orders.order.application.port.in.ReceiveOrderCommand;
 import com.service.orders.order.application.port.in.ReceiveOrderUseCase;
 import com.service.orders.order.domain.*;
@@ -27,6 +29,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import javax.validation.constraints.NotEmpty;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -46,21 +49,26 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(controllers = OrderController.class)
 class OrderControllerTest {
-
+/*
     @InjectMocks
     private OrderController controller;
-
+*/
     @MockBean
     private ResponseHandler responseHandler;
 
     @MockBean
     private ReceiveOrderUseCase receiveOrderUseCaseService;
 
+    @MockBean
+    private DtoDataFormatter formatter;
+
     @Autowired
     private MockMvc mockMvc;
 
     @Autowired
     private ObjectMapper objectMapper = new ObjectMapper();
+
+
 /*
     @BeforeEach
     void setUp() {
@@ -78,9 +86,16 @@ class OrderControllerTest {
         List<RequestedItem> requestedItems = getRequestedItems(appleId, orangeId);
         OrderInputData orderInputData = new OrderInputData(clientId.getValue(), requestedItems);
         String jsonInputData = objectMapper.writeValueAsString(orderInputData);
-
         Order order = getOrder(orderId, clientId, appleId, orangeId);
+        OrderOutputData orderOutputData = OrderOutputData.builder()
+                .orderId(order.getId().getValue())
+                .date(order.getTimestamp().toLocalDate())
+                .clientId(order.getClientId().getValue())
+                .cost(BigDecimal.valueOf(order.calculateCost()/100.0))
+                .details(order.getOrderDetail().getDetails())
+                .build();
         BDDMockito.given(receiveOrderUseCaseService.receiveOrder(any(ReceiveOrderCommand.class))).willReturn(order);
+        BDDMockito.given(formatter.toOutputFormat(any(Order.class))).willReturn(orderOutputData);
         MvcResult mvcResult = mockMvc.perform(post("/api/v1/orders")
                         .contentType(MediaType.APPLICATION_JSON).characterEncoding("utf-8")
                         .content(jsonInputData))
