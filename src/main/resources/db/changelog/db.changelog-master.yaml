@@ -55,11 +55,16 @@ databaseChangeLog:
             tableName: offer
             columns:
               - column:
-                  name: item_id
+                  name: offer_id
                   type: int
                   autoIncrement: true
                   constraints:
                     primaryKey: true
+                    nullable: false
+              - column:
+                  name: item_id
+                  type: int
+                  constraints:
                     nullable: false
               - column:
                   name: offered_quantity
@@ -179,3 +184,26 @@ databaseChangeLog:
             constraintName: fk_discount_item
             referencedColumnNames: item_id
             referencedTableName: item
+  - changeSet:
+      id: insert-items
+      author: vnorobio
+      comment: "Some comments go here"
+      changes:
+        - insert:
+            tableName: item
+            columns:
+              - column:
+                  name: description
+                  value: "Apple"
+              - column:
+                  name: cost
+                  value: 60
+        - insert:
+            tableName: item
+            columns:
+              - column:
+                  name: description
+                  value: "Orange"
+              - column:
+                  name: cost
+                  value: 25
