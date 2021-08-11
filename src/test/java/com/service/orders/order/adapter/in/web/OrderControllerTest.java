@@ -1,6 +1,5 @@
 package com.service.orders.order.adapter.in.web;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.service.orders.common.ResponseHandler;
 import com.service.orders.order.adapter.in.web.dto.DtoDataFormatter;
@@ -9,35 +8,26 @@ import com.service.orders.order.adapter.in.web.dto.OrderOutputData;
 import com.service.orders.order.application.port.in.ReceiveOrderCommand;
 import com.service.orders.order.application.port.in.ReceiveOrderUseCase;
 import com.service.orders.order.domain.*;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.BDDMockito;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MockMvcBuilder;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import javax.validation.constraints.NotEmpty;
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import static com.service.orders.common.OrderTestData.defaultDetail;
 import static com.service.orders.common.OrderTestData.defaultOrder;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.atMostOnce;
 import static org.mockito.Mockito.verify;
@@ -92,7 +82,7 @@ class OrderControllerTest {
                 .date(order.getTimestamp().toLocalDate())
                 .clientId(order.getClientId().getValue())
                 .cost(BigDecimal.valueOf(order.calculateCost()/100.0))
-                .details(order.getOrderDetail().getDetails())
+                .details(order.getOrderedItems().getDetails())
                 .build();
         BDDMockito.given(receiveOrderUseCaseService.receiveOrder(any(ReceiveOrderCommand.class))).willReturn(order);
         BDDMockito.given(formatter.toOutputFormat(any(Order.class))).willReturn(orderOutputData);
@@ -129,7 +119,7 @@ class OrderControllerTest {
     }
 
     private Order getOrder(Order.OrderId orderId, Order.ClientId clientId, Item.ItemId... itemIds) {
-        List<Detail> details = new ArrayList<>();
+        List<ItemDetail> details = new ArrayList<>();
         for (Item.ItemId id: itemIds) {
             details.add(
                     defaultDetail()
@@ -142,7 +132,7 @@ class OrderControllerTest {
         return defaultOrder()
                 .withOrderId(orderId)
                 .withClientId(clientId)
-                .withOrderDetail(new OrderDetail(details)).build();
+                .withOrderDetail(new OrderedItems(details)).build();
     }
 
     private List<RequestedItem> getRequestedItems(Item.ItemId... itemIds){

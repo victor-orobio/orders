@@ -13,7 +13,7 @@ public class DtoDataFormatter {
                 .date(order.getTimestamp().toLocalDate())
                 .clientId(order.getClientId().getValue())
                 .cost(BigDecimal.valueOf(centsToDollars(order.calculateCost())))
-                .details(order.getOrderDetail().getDetails())
+                .details(order.getOrderedItems().getDetails())
                 .build();
     }
 

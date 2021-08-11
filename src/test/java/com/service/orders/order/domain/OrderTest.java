@@ -5,8 +5,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.math.BigInteger;
-
 import static com.service.orders.common.OrderTestData.defaultDetail;
 import static com.service.orders.common.OrderTestData.defaultOrder;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -26,7 +24,7 @@ public class OrderTest {
         Order order = defaultOrder()
                 .withOrderId(orderId)
                 .withClientId(clientId)
-                .withOrderDetail(new OrderDetail(
+                .withOrderDetail(new OrderedItems(
                         defaultDetail()
                                 .withOrderId(orderId)
                                 .withItemId(appleId)

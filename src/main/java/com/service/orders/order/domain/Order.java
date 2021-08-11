@@ -5,8 +5,6 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.time.LocalDateTime;
 
 @Value
@@ -25,10 +23,14 @@ public class Order {
 
     @Getter
     @NonNull
-    private final OrderDetail orderDetail;
+    private final OrderedItems orderedItems;
+
+    @Getter
+    @NonNull
+    private final OfferedDiscounts offeredDiscounts;
 
     public Integer calculateCost() {
-        return orderDetail.calculateCost();
+        return orderedItems.calculateCost() - offeredDiscounts.calculateDiscount();
     }
 
     @Value

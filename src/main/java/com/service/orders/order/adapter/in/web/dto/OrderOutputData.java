@@ -1,6 +1,6 @@
 package com.service.orders.order.adapter.in.web.dto;
 
-import com.service.orders.order.domain.Detail;
+import com.service.orders.order.domain.ItemDetail;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NonNull;
@@ -28,5 +28,5 @@ public class OrderOutputData {
     private final BigDecimal cost;
 
     @NonNull
-    private final List<Detail> details;
+    private final List<ItemDetail> details;
 }

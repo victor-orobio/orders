@@ -8,7 +8,7 @@ import lombok.Value;
 @Value
 @EqualsAndHashCode
 @RequiredArgsConstructor
-public class Detail {
+public class DiscountDetail {
     @Getter
     private DetailId id;
 
@@ -22,10 +22,10 @@ public class Detail {
     private final Integer quantity;
 
     @Getter
-    private final Integer cost;
+    private final Integer costDiscounted;
 
-    public Integer calculateTotalCost(){
-        return this.quantity * this.cost;
+    public Integer calculateTotalDiscount(){
+        return this.quantity * this.costDiscounted;
     }
 
     @Value

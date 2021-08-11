@@ -1,7 +1,6 @@
 package com.service.orders.order.application.port.in;
 
 import com.service.orders.order.domain.Order;
-import com.service.orders.order.domain.OrderDetail;
 import com.service.orders.order.domain.RequestedItem;
 import lombok.EqualsAndHashCode;
 
