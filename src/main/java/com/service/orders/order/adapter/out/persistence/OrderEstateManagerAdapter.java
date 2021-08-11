@@ -26,16 +26,7 @@ public class OrderEstateManagerAdapter implements OrderEstateManagerPort {
                 null, order.getClientId().getValue(), order.getTimestamp()));
         List<ItemDetailEntity> detailEntityList = persistDetailEntityList(order.getOrderedItems().getDetails(), orderEntity);
         List<DiscountDetailEntity> discountDetailEntityList = persistDiscountEntityList(order.getOfferedDiscounts().getDetails(), orderEntity);
-        return new Order(
-                new Order.OrderId(orderEntity.getId()),
-                new Order.ClientId(orderEntity.getClientId()),
-                orderEntity.getDate(),
-                new OrderedItems(detailEntityList.stream()
-                        .map(ItemDetailDataMapper::mapToBusiness).collect(Collectors.toList())),
-                discountDetailEntityList.isEmpty() ?
-                        new OfferedDiscounts( new ArrayList<DiscountDetail>()) :
-                        new OfferedDiscounts( discountDetailEntityList.stream().map(discountDetailEntity ->
-                                DiscountDetailDataMapper.mapToBusiness(discountDetailEntity)).collect(Collectors.toList())));
+        return OrderDataMapper.mapToOrder(orderEntity, detailEntityList, discountDetailEntityList);
     }
 
     private List<ItemDetailEntity> persistDetailEntityList(List<ItemDetail> orderDetails, OrderEntity orderEntity) {

@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import java.util.NoSuchElementException;
+
 @ControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
@@ -32,6 +34,18 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                     fieldError.getDefaultMessage());
         }
         return ResponseEntity.unprocessableEntity().body(errorResponse);
+    }
+
+
+    @ExceptionHandler(NoSuchElementException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ResponseEntity<Object> handleItemNotFoundException(
+            NoSuchElementException exception,
+            WebRequest request
+    ){
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(exception.getMessage());
     }
 
     @ExceptionHandler(RuntimeException.class)
