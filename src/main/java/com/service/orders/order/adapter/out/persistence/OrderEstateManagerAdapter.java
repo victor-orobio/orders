@@ -32,7 +32,7 @@ public class OrderEstateManagerAdapter implements OrderEstateManagerPort {
     private List<ItemDetailEntity> persistDetailEntityList(List<ItemDetail> orderDetails, OrderEntity orderEntity) {
         return itemDetailRepository.saveAll(
                 orderDetails.stream()
-                        .map(ItemDetailDataMapper::mapToEntityNoId)
+                        .map(detail -> ItemDetailDataMapper.mapToEntityNoId(detail, orderEntity.getId()))
                         .collect(Collectors.toList()));
     }
 
@@ -41,7 +41,7 @@ public class OrderEstateManagerAdapter implements OrderEstateManagerPort {
 
         return discountDetailRepository.saveAll(
                 discountDetails.stream()
-                        .map(DiscountDetailDataMapper::mapToEntityNoId)
+                        .map(detail -> DiscountDetailDataMapper.mapToEntityNoId(detail, orderEntity.getId()))
                         .collect(Collectors.toList()));
     }
 }

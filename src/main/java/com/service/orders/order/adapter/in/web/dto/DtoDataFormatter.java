@@ -12,12 +12,9 @@ public class DtoDataFormatter {
                 .orderId(order.getId().getValue())
                 .date(order.getTimestamp().toLocalDate())
                 .clientId(order.getClientId().getValue())
-                .cost(BigDecimal.valueOf(centsToDollars(order.calculateCost())))
+                .cost(BigDecimal.valueOf(order.calculateCost()))
                 .details(order.getOrderedItems().getDetails())
                 .build();
     }
 
-    private Double centsToDollars(Integer cents){
-        return cents / Double.valueOf(100);
-    }
 }

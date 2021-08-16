@@ -26,6 +26,16 @@ public class ItemDetailDataMapper {
         );
     }
 
+    public static ItemDetailEntity mapToEntityNoId(ItemDetail itemDetail, Long orderId){
+        return new ItemDetailEntity(
+                null,
+                orderId,
+                itemDetail.getItemId().getValue(),
+                itemDetail.getQuantity(),
+                itemDetail.getCost()
+        );
+    }
+
     public static ItemDetail mapToBusiness(ItemDetailEntity itemDetailEntity){
         return new ItemDetail(
                 new ItemDetail.DetailId(itemDetailEntity.getId()),

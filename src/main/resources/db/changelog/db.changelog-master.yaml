@@ -4,7 +4,7 @@ databaseChangeLog:
       author: vnorobio
       changes:
         - createTable:
-            tableName: order
+            tableName: order_doc
             columns:
               - column:
                   name: order_id
@@ -14,7 +14,7 @@ databaseChangeLog:
                     primaryKey: true
                     nullable: false
               - column:
-                  name: cliente_id
+                  name: client_id
                   type: int
                   constraints:
                     nullable: false
@@ -119,7 +119,7 @@ databaseChangeLog:
             baseTableName: item_detail
             constraintName: fk_detail_order
             referencedColumnNames: order_id
-            referencedTableName: order
+            referencedTableName: order_doc
   - changeSet:
       id: item-detail-createfk-item
       author: vnorobio
@@ -173,7 +173,7 @@ databaseChangeLog:
             baseTableName: discount_detail
             constraintName: fk_discount_order
             referencedColumnNames: order_id
-            referencedTableName: order
+            referencedTableName: order_doc
   - changeSet:
       id: discount-detail-createfk-item
       author: vnorobio

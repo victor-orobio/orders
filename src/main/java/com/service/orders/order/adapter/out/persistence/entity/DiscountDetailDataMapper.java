@@ -26,6 +26,16 @@ public class DiscountDetailDataMapper {
         );
     }
 
+    public static  DiscountDetailEntity mapToEntityNoId(DiscountDetail discountDetail, Long orderId){
+        return new DiscountDetailEntity(
+                null,
+                orderId,
+                discountDetail.getItemId().getValue(),
+                discountDetail.getQuantity(),
+                discountDetail.getCostDiscounted()
+        );
+    }
+
     public static DiscountDetail mapToBusiness(DiscountDetailEntity discountDetailEntity){
         return new DiscountDetail(
                 new DiscountDetail.DetailId(discountDetailEntity.getId()),
